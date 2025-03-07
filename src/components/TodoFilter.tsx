@@ -8,13 +8,19 @@ interface Props {
 }
 
 export const TodoFilter: React.FC<Props> = ({ filterSelected, onFilterChange }) => {
+  const handleFilterChange = (filter: FilterValue, event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    onFilterChange(filter)
+  }
+
   return (
     <ul className="filters">
       <li>
         <a 
           href="#/" 
           className={filterSelected === 'all' ? 'selected' : ''}
-          onClick={() => onFilterChange('all')}
+          onClick={(e) => handleFilterChange('all', e)}
+          title="Ver todas las tareas"
         >
           Todas
         </a>
@@ -23,7 +29,8 @@ export const TodoFilter: React.FC<Props> = ({ filterSelected, onFilterChange }) 
         <a 
           href="#/active" 
           className={filterSelected === 'active' ? 'selected' : ''}
-          onClick={() => onFilterChange('active')}
+          onClick={(e) => handleFilterChange('active', e)}
+          title="Ver solo tareas pendientes"
         >
           Activas
         </a>
@@ -32,7 +39,8 @@ export const TodoFilter: React.FC<Props> = ({ filterSelected, onFilterChange }) 
         <a 
           href="#/completed" 
           className={filterSelected === 'completed' ? 'selected' : ''}
-          onClick={() => onFilterChange('completed')}
+          onClick={(e) => handleFilterChange('completed', e)}
+          title="Ver solo tareas completadas"
         >
           Completadas
         </a>

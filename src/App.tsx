@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Todos } from './components/Todos'
 import { TodoForm } from './components/TodoForm'
 import { TodoFilter, type FilterValue } from './components/TodoFilter'
 import { type ListOfTodos } from './types'
 
-const mockTodos = [
+const STORAGE_KEY = 'todo-app-ts-todos'
+
+const initialTodos = [
   {
     id: 1,
     title: 'Aprender React',
@@ -22,9 +24,30 @@ const mockTodos = [
   }
 ]
 
+// Función para cargar tareas desde localStorage
+const loadTodos = (): ListOfTodos => {
+  const savedTodos = localStorage.getItem(STORAGE_KEY)
+  return savedTodos ? JSON.parse(savedTodos) : initialTodos
+}
+
 export const App = (): JSX.Element => {
-  const [todos, setTodos] = useState<ListOfTodos>(mockTodos)
+  const [todos, setTodos] = useState<ListOfTodos>(loadTodos)
   const [filterSelected, setFilterSelected] = useState<FilterValue>('all')
+  const [loading, setLoading] = useState(true)
+
+  // Efecto para simular carga inicial
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 800)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Efecto para guardar tareas en localStorage cuando cambian
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+  }, [todos])
 
   const handleRemoveTodo = (id: number): void => {
     const newTodos = todos.filter((todo) => todo.id !== id)
@@ -68,35 +91,56 @@ export const App = (): JSX.Element => {
   const completedCount = todos.length - activeCount
   const hasCompleted = completedCount > 0
 
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Cargando tareas...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="todoapp">
       <header className="header">
         <h1>todos</h1>
         <TodoForm onAddTodo={handleAddTodo} />
       </header>
-      <Todos
-        onRemoveTodo={handleRemoveTodo}
-        onToggleTodo={handleToggleTodo}
-        todos={filteredTodos} 
-      />
-      {todos.length > 0 && (
-        <footer className="footer">
-          <span className="todo-count">
-            <strong>{activeCount}</strong> {activeCount === 1 ? 'tarea pendiente' : 'tareas pendientes'}
-          </span>
-          <TodoFilter 
-            filterSelected={filterSelected} 
-            onFilterChange={setFilterSelected} 
+      
+      {todos.length > 0 ? (
+        <>
+          <Todos
+            onRemoveTodo={handleRemoveTodo}
+            onToggleTodo={handleToggleTodo}
+            todos={filteredTodos} 
           />
-          {hasCompleted && (
-            <button 
-              className="clear-completed"
-              onClick={handleClearCompleted}
-            >
-              Borrar completadas
-            </button>
-          )}
-        </footer>
+          <footer className="footer">
+            <span className="todo-count">
+              <strong>{activeCount}</strong> {activeCount === 1 ? 'tarea pendiente' : 'tareas pendientes'}
+            </span>
+            {completedCount > 0 && (
+              <span className="completed-count">
+                <strong>{completedCount}</strong> {completedCount === 1 ? 'completada' : 'completadas'}
+              </span>
+            )}
+            <TodoFilter 
+              filterSelected={filterSelected} 
+              onFilterChange={setFilterSelected} 
+            />
+            {hasCompleted && (
+              <button 
+                className="clear-completed"
+                onClick={handleClearCompleted}
+              >
+                Borrar completadas
+              </button>
+            )}
+          </footer>
+        </>
+      ) : (
+        <div className="empty-state">
+          <p>No hay tareas. ¡Agrega una nueva!</p>
+        </div>
       )}
     </div>
   )

@@ -18,14 +18,16 @@ export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="todo-form">
       <input
         className="new-todo"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="¿Qué necesitas hacer?"
         autoFocus
+        maxLength={100}
       />
+      <span className="input-hint">Presiona Enter para agregar</span>
     </form>
   )
 } 
