@@ -1,7 +1,14 @@
 {
   "name": "todo-app-ts",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Una aplicación de lista de tareas (Todo List) moderna y funcional construida con React y TypeScript",
+  "author": "Kevin Duhamel Hayes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevinduhamelhayes/todo-app-ts.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
